@@ -16,8 +16,8 @@ export const CommitBar = () => {
             console.log("Commit message can't be blank!");
             return;
         }
-        console.log('Committing...');
         git.commit(commitMessage);
+        setCommitMessage('');
     };
 
     return (
