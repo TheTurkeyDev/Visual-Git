@@ -5,7 +5,11 @@ import { barWrapper } from './commit-bat.css';
 import { useGit } from '../contexts/git-context';
 import { buttonRow } from '../style.css';
 
-export const CommitBar = () => {
+type CommitBarProps = {
+    readonly setSelectedFile: (file: string) => void
+}
+
+export const CommitBar = ({ setSelectedFile }: CommitBarProps) => {
 
     const { commands: git } = useGit();
 
@@ -18,6 +22,7 @@ export const CommitBar = () => {
         }
         git.commit(commitMessage);
         setCommitMessage('');
+        setSelectedFile('');
     };
 
     return (

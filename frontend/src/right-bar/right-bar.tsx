@@ -13,7 +13,7 @@ export const RightBar = ({ setSelectedFile, show, toggleShow }: RightBarProps) =
         <div className={rightBar}>
             <div className={rightBarInternal}>
                 <Changes setSelectedFile={setSelectedFile} />
-                <CommitBar />
+                <CommitBar  setSelectedFile={setSelectedFile}/>
             </div>
             <div className={rightBarCollapseBtn} onClick={toggleShow}>
                 <i className={`fa-solid ${show ? 'fa-chevron-right' : 'fa-chevron-left'}`} />
