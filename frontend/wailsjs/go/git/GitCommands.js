@@ -34,6 +34,14 @@ export function GitPush(arg1) {
   return window['go']['git']['GitCommands']['GitPush'](arg1);
 }
 
+export function GitRemoteAdd(arg1, arg2, arg3) {
+  return window['go']['git']['GitCommands']['GitRemoteAdd'](arg1, arg2, arg3);
+}
+
+export function GitRemotesList(arg1) {
+  return window['go']['git']['GitCommands']['GitRemotesList'](arg1);
+}
+
 export function GitReset(arg1, arg2) {
   return window['go']['git']['GitCommands']['GitReset'](arg1, arg2);
 }

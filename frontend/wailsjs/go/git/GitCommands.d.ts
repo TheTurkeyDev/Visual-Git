@@ -18,6 +18,10 @@ export function GitInit(arg1:string):Promise<string>;
 
 export function GitPush(arg1:git.LocalRepository):Promise<string>;
 
+export function GitRemoteAdd(arg1:git.LocalRepository,arg2:string,arg3:string):Promise<string>;
+
+export function GitRemotesList(arg1:git.LocalRepository):Promise<Array<git.GitRemote>>;
+
 export function GitReset(arg1:git.LocalRepository,arg2:string):Promise<string>;
 
 export function GitStatus(arg1:git.LocalRepository):Promise<git.GitStatus>;

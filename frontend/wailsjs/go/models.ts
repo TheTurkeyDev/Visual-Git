@@ -16,6 +16,20 @@ export namespace git {
 	        this.commitSubject = source["commitSubject"];
 	    }
 	}
+	export class GitRemote {
+	    name: string;
+	    url: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new GitRemote(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.name = source["name"];
+	        this.url = source["url"];
+	    }
+	}
 	export class GitStatusUntracked {
 	    id: number;
 	    path: string;

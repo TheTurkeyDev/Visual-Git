@@ -137,6 +137,34 @@ func (gc *GitCommands) GitBranchesList(repo LocalRepository) []GitBranch {
 	return branches
 }
 
+func (gc *GitCommands) GitRemotesList(repo LocalRepository) []GitRemote {
+	remotes := []GitRemote{}
+	output, _ := runCMD(repo.Location, "git", "remote", "-v")
+	lines := strings.Split(output, "\n")
+	for _, line := range lines {
+		if len(line) == 0 {
+			continue
+		}
+		parts := strings.Fields(line)
+		remote := GitRemote{
+			Name: parts[0],
+			URL:  parts[1],
+		}
+		// TODO handle fetch/push stuff?
+		found := false
+		for _, r := range remotes {
+			if r.Name == remote.Name {
+				found = true
+				break
+			}
+		}
+		if !found {
+			remotes = append(remotes, remote)
+		}
+	}
+	return remotes
+}
+
 func (gc *GitCommands) GitBranch(repo LocalRepository, name string) string {
 	output, _ := runCMD(repo.Location, "git", "branch", name)
 	return output
@@ -164,6 +192,11 @@ func (gc *GitCommands) GitCommit(repo LocalRepository, message string) string {
 
 func (gc *GitCommands) GitPush(repo LocalRepository) string {
 	output, _ := runCMD(repo.Location, "git", "push")
+	return output
+}
+
+func (gc *GitCommands) GitRemoteAdd(repo LocalRepository, name string, url string) string {
+	output, _ := runCMD(repo.Location, "git", "remote", "add", name, url)
 	return output
 }
 

@@ -1,18 +1,20 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { git } from '../../wailsjs/go/models';
-import { GitAdd, GitBranchesList, GitCommit, GitReset, GitStatus, GitBranch, GitIgnore } from '../../wailsjs/go/git/GitCommands';
+import { GitAdd, GitBranchesList, GitCommit, GitReset, GitStatus, GitBranch, GitIgnore, GitRemoteAdd, GitRemotesList } from '../../wailsjs/go/git/GitCommands';
 import { useRepos } from './repos-context';
 import { useInterval } from '../hooks/use-interval';
 
 type GitContextType = {
     readonly branch: string
     readonly branches: readonly git.GitBranch[]
+    readonly remotes: readonly git.GitRemote[]
     readonly changes?: git.GitStatusChanges
     readonly commands: {
         readonly add: (file: string) => void
         readonly reset: (file: string) => void
         readonly commit: (message: string) => void
         readonly branch: (name: string) => void
+        readonly remoteAdd: (name: string, url: string) => void
         readonly ignore: (pattern: string) => void
     }
 }
@@ -36,13 +38,13 @@ export const GitWrapper = ({ children }: GitWrapperProps) => {
 
     const [branch, setBranch] = useState('');
     const [branches, setBranches] = useState<readonly git.GitBranch[]>([]);
+    const [remotes, setRemotes] = useState<readonly git.GitRemote[]>([]);
     const [changes, setChanges] = useState<git.GitStatusChanges>();
-
-    console.log(currentRepo);
 
     useEffect(() => {
         gitStatus();
         gitBranches();
+        gitRemotes();
     }, [currentRepo]);
 
     useInterval(() => {
@@ -62,8 +64,15 @@ export const GitWrapper = ({ children }: GitWrapperProps) => {
         if (!currentRepo)
             return;
         GitBranchesList(currentRepo).then(branches => {
-            console.log(branches);
             setBranches(branches);
+        });
+    };
+
+    const gitRemotes = () => {
+        if (!currentRepo)
+            return;
+        GitRemotesList(currentRepo).then(remotes => {
+            setRemotes(remotes);
         });
     };
 
@@ -95,17 +104,28 @@ export const GitWrapper = ({ children }: GitWrapperProps) => {
         if (!currentRepo)
             return;
         GitBranch(currentRepo, name).then(log => {
-            console.log(log);
+            gitRemotes();
             gitBranches();
             gitStatus();
         });
     };
 
+    const gitRemoteAdd = (name: string, url: string) => {
+        if (!currentRepo)
+            return;
+        GitRemoteAdd(currentRepo, name, url).then(log => {
+            gitRemotes();
+            gitBranches();
+            gitStatus();
+        });
+    };
+
+
+
     const gitIgnore = (pattern: string) => {
         if (!currentRepo)
             return;
         GitIgnore(currentRepo, pattern).then(() => {
-            gitBranches();
             gitStatus();
         });
     };
@@ -118,10 +138,11 @@ export const GitWrapper = ({ children }: GitWrapperProps) => {
         commit: gitCommit,
         branch: gitBranch,
         ignore: gitIgnore,
+        remoteAdd: gitRemoteAdd,
     };
 
     return (
-        <GitContext.Provider value={{ branch, branches, changes, commands }}>
+        <GitContext.Provider value={{ branch, branches, remotes, changes, commands }}>
             {children}
         </GitContext.Provider>
     );
